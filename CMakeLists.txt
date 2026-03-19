@@ -23,6 +23,7 @@ option(DYNARMIC_USE_LLVM "Support disassembly of jitted x86_64 code using LLVM" 
 option(DYNARMIC_USE_PRECOMPILED_HEADERS "Use precompiled headers" ON)
 option(DYNARMIC_USE_BUNDLED_EXTERNALS "Use all bundled externals (useful when e.g. cross-compiling)" OFF)
 option(DYNARMIC_WARNINGS_AS_ERRORS "Warnings as errors" ${MASTER_PROJECT})
+option(DYNARMIC_ENABLE_LTO "Enable LTO" ON)
 if (NOT DEFINED DYNARMIC_FRONTENDS)
     set(DYNARMIC_FRONTENDS "A32;A64" CACHE STRING "Selects which frontends to enable")
 endif()
@@ -93,6 +94,10 @@ else()
         -pedantic
         -Wno-missing-braces)
 
+    if (ARCHITECTURE STREQUAL "x86_64")
+        list(APPEND DYNARMIC_CXX_FLAGS -mtune=core2)
+    endif()
+    
     if (DYNARMIC_WARNINGS_AS_ERRORS)
         list(APPEND DYNARMIC_CXX_FLAGS
              -pedantic-errors
